@@ -2,6 +2,10 @@
 *.o
 *.ko
 
+# Eclipse
+.cproject
+.project
+
 # Libraries
 *.lib
 *.a
