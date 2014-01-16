@@ -17,6 +17,22 @@ void sdl_bomb(const std::string &msg) {
 	exit(-1);
 }
 
+void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, int w=-1, int h=-1) {
+	SDL_Rect dest;
+	dest.x = x;
+	dest.y = y;
+
+	if(w == -1 || h == -1)
+		SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+	else
+	{
+		dest.w = w;
+		dest.h = h;
+	}
+
+	SDL_RenderCopy(ren, tex, NULL, &dest);
+}
+
 SDL_Texture* loadTexture(const std::string &path, SDL_Renderer *ren) {
 	SDL_Texture *tex = nullptr;
 	SDL_Surface *bmp = SDL_LoadBMP(path.c_str());
@@ -55,15 +71,24 @@ int main(int argc, char* argv[]) {
 	if(ren == nullptr)
 		sdl_bomb("Failed to create SDL Renderer");
 
-	SDL_Texture *tex = loadTexture("hello.bmp", ren);
+	SDL_Texture *background = loadTexture("background.bmp", ren);
+	SDL_Texture *image = loadTexture("image.bmp", ren);
 
 	SDL_RenderClear(ren);
-	SDL_RenderCopy(ren, tex, NULL, NULL);
+
+	renderTexture(background, ren, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	int img_width;
+	int img_height;
+	SDL_QueryTexture(image, NULL, NULL, &img_width, &img_height);
+	renderTexture(image, ren, SCREEN_WIDTH/2 - img_width/2, SCREEN_HEIGHT/2 - img_height/2);
+
 	SDL_RenderPresent(ren);
 
 	SDL_Delay(2000);
 
-	SDL_DestroyTexture(tex);
+	SDL_DestroyTexture(background);
+	SDL_DestroyTexture(image);
 	SDL_DestroyRenderer(ren);
 	SDL_DestroyWindow(win);
 
