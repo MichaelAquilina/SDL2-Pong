@@ -60,7 +60,11 @@ int main(int argc, char* argv[]) {
 
 	int img_width;
 	int img_height;
+
 	SDL_QueryTexture(image, NULL, NULL, &img_width, &img_height);
+
+	int img_x = SCREEN_WIDTH/2 - img_width/2;
+	int img_y = SCREEN_HEIGHT/2 - img_height/2;
 
 	SDL_Event e;
 
@@ -69,17 +73,30 @@ int main(int argc, char* argv[]) {
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT)  quit = true;
 			if(e.type == SDL_KEYDOWN) {
-				if(e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) quit = true;
-
-				bool isPressed = (e.key.state == SDL_PRESSED)? true : false;
-				std::cout << (char) e.key.keysym.sym << std::endl;
+				switch(e.key.keysym.scancode) {
+					case SDL_SCANCODE_ESCAPE:
+						quit = true;
+						break;
+					case SDL_SCANCODE_LEFT:
+						img_x -=3;
+						break;
+					case SDL_SCANCODE_RIGHT:
+						img_x += 3;
+						break;
+					case SDL_SCANCODE_UP:
+						img_y -=3;
+						break;
+					case SDL_SCANCODE_DOWN:
+						img_y +=3;
+						break;
+				}
 			}
 		}
 
 		SDL_RenderClear(ren);
 
 		renderTexture(background, ren, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		renderTexture(image, ren, SCREEN_WIDTH/2 - img_width/2, SCREEN_HEIGHT/2 - img_height/2);
+		renderTexture(image, ren, img_x, img_y);
 
 		SDL_RenderPresent(ren);
 	}
