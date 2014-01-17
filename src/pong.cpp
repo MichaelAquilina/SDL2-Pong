@@ -52,8 +52,9 @@ int main(int argc, char* argv[]) {
 	b.x = SCREEN_WIDTH / 2;
 	b.y = SCREEN_HEIGHT / 2;
 	b.vx = -4;
-	b.vy = -2;
+	b.vy = -1;
 
+	p1.score = p2.score = 0;
 	p1.width = p2.width = board_width;
 	p1.height = p2.height = 150;
 	p1.speed = p2.speed = 10;
@@ -110,28 +111,43 @@ int main(int argc, char* argv[]) {
 		b.x += b.vx;
 		b.y += b.vy;
 
-		if(b.x < 0) {
-			b.x = 0;
-			b.vx *= -1;
-		}
-		if(b.x > SCREEN_WIDTH) {
-			b.x = SCREEN_WIDTH;
-			b.vx *= -1;
-		}
+		// Boundary Collision
 		if(b.y < 0) {
 			b.y = 0;
 			b.vy *= -1;
 		}
-		if(b.y > SCREEN_HEIGHT) {
-			b.y = SCREEN_HEIGHT;
+		if(b.y >= SCREEN_HEIGHT) {
+			b.y = SCREEN_HEIGHT - 1;
 			b.vy *= -1;
 		}
 
-		// Boundary Collision
+		if(b.x < 0) {
+			p2.score += 1;
+			b.x = p1.x + p1.width;
+			b.y = p1.y + p1.height/2;
+			b.vx = 2;
+		}
+		if(b.x >= SCREEN_WIDTH) {
+			p1.score += 1;
+			b.x = p2.x;
+			b.y = p2.y + p2.height/2;
+			b.vx = -2;
+		}
+
 		if(p1.y < 0) p1.y = 0;
 		if(p1.y + p1.height > SCREEN_HEIGHT) p1.y = SCREEN_HEIGHT - p1.height;
 		if(p2.y < 0) p2.y = 0;
 		if(p2.y + p2.height > SCREEN_HEIGHT) p2.y = SCREEN_HEIGHT - p2.height;
+
+		// Player Collision
+		if(b.x > p1.x && b.x < p1.x + p1.width && b.y > p1.y && b.y < p1.y + p1.height) {
+			b.x = p1.x + p1.width;
+			b.vx *= -1;
+		}
+		if(b.x > p2.x && b.x < p2.x + p2.width && b.y > p2.y && b.y < p2.y + p2.height) {
+			b.x = p2.x;
+			b.vx *= -1;
+		}
 
 		SDL_RenderClear(ren);
 
@@ -154,7 +170,7 @@ int main(int argc, char* argv[]) {
 		SDL_QueryTexture(p1score, NULL, NULL, &width, NULL);
 
 		renderTexture(p1score, ren, SCREEN_WIDTH/2 - width - 10, 10);
-		renderTexture(p1score, ren, SCREEN_WIDTH/2 + 10, 10);
+		renderTexture(p2score, ren, SCREEN_WIDTH/2 + 10, 10);
 
 		SDL_DestroyTexture(p1score);
 		SDL_DestroyTexture(p2score);
