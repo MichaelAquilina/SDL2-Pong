@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <math.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -32,11 +33,9 @@ int main(int argc, char* argv[]) {
 	SDL_Texture *pongBoard = IMG_LoadTexture(ren, "../img/pong_board.png");
 	SDL_QueryTexture(pongBoard, NULL, NULL, &board_width, &board_height);
 
-	SDL_Color textColor = {255, 255, 255};
-	SDL_Texture *helloWorldTex = renderText("Welcome to Pong!", "../fonts/sample.ttf", textColor, 30, ren);
-
-	if(helloWorldTex == nullptr)
-		sdl_bomb("Unable to render text to texture!");
+	SDL_Color whiteColor = {255, 255, 255};
+	SDL_Surface *fpsCounter;
+	TTF_Font *sampleFont = TTF_OpenFont("../fonts/sample.ttf", 20);
 
 	// Define Players
 	player p1;
@@ -53,9 +52,25 @@ int main(int argc, char* argv[]) {
 	p2.y = SCREEN_HEIGHT/2 - p2.height/2;
 
 	std::cout << "Starting Game Loop" << std::endl;
+
+	uint prevTime = SDL_GetTicks();
 	bool quit = false;
+	int frames = 0;
+	float fps;
 
 	while(!quit) {
+
+		// FPS Calculation
+		++frames;
+		uint currTime = SDL_GetTicks();
+		float elapsed = (currTime - prevTime);
+
+		if(elapsed > 100) {
+			fps = round(frames / (elapsed / 1000.0));
+			frames = 0;
+			prevTime = currTime;
+		}
+
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT)  quit = true;
 			if(e.type == SDL_KEYDOWN) {
@@ -86,7 +101,14 @@ int main(int argc, char* argv[]) {
 		renderTexture(pongBoard, ren, p1.x, p1.y, p1.width, p1.height);
 		renderTexture(pongBoard, ren, p2.x, p2.y, p1.width, p1.height);
 
-		renderTexture(helloWorldTex, ren, 0, 0);
+		// Extremely ineffecient way of displaying text
+		char fpsBuffer[10];
+		sprintf(fpsBuffer, "%.0f", fps);
+		fpsCounter = TTF_RenderText_Blended(sampleFont, fpsBuffer, whiteColor);
+		SDL_Texture *fpsTexture = SDL_CreateTextureFromSurface(ren, fpsCounter);
+		SDL_FreeSurface(fpsCounter);
+		renderTexture(fpsTexture, ren, SCREEN_WIDTH - 20, 0);
+		SDL_DestroyTexture(fpsTexture);
 
 		SDL_RenderPresent(ren);
 	}
@@ -101,7 +123,7 @@ int main(int argc, char* argv[]) {
 			sdl_bomb("Failed to Initialise SDL");
 
 	 	 *win = SDL_CreateWindow(
-	 			"SDL Pong - Michael Aquilina",
+	 			"SDL Pong by Michael Aquilina",
 	 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 	 			SCREEN_WIDTH, SCREEN_HEIGHT,
 	 			SDL_WINDOW_SHOWN
@@ -125,6 +147,7 @@ int main(int argc, char* argv[]) {
 		SDL_DestroyRenderer(*ren);
 		SDL_DestroyWindow(*win);
 
+		TTF_Quit();
 		IMG_Quit();
 		SDL_Quit();
  }
