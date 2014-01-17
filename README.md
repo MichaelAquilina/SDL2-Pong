@@ -1,6 +1,4 @@
-SDL2_Testing
-============
+SDL2 Pong
+==========
 
-Development Sandbox for testing the capabilities of SDL 2 (vs Glew)
-
-Most of this code is based off the great tutorials found at [twinklebeardev's blog](http://twinklebeardev.blogspot.co.uk/)
+Development of a simple game of Pong using the SDL2 library
