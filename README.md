@@ -3,16 +3,16 @@ SDL2 Pong
 
 Simple implementation of pong using SDL2.0
 
-![Pong on Kubuntu](img/sdl_pong2.png)
-
 This is a single player game with the second paddle being controlled by an *extremely* simple AI.
+
+![Pong on Kubuntu](img/sdl_pong2.png)
 
 Controls
 --------
 
-Up - move up
-Down - move down
-Escape - Exit
+* Up - move up
+* Down - move down
+* Escape - Exit
 
 Requirements
 ------------
