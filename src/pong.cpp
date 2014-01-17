@@ -13,6 +13,13 @@
 typedef struct {
 	int x;
 	int y;
+	int vx;
+	int vy;
+} ball;
+
+typedef struct {
+	int x;
+	int y;
 	int width;
 	int height;
 	int score;
@@ -39,6 +46,13 @@ int main(int argc, char* argv[]) {
 	// Define Players
 	player p1;
 	player p2;
+
+	// Define Ball
+	ball b;
+	b.x = SCREEN_WIDTH / 2;
+	b.y = SCREEN_HEIGHT / 2;
+	b.vx = -4;
+	b.vy = -2;
 
 	p1.width = p2.width = board_width;
 	p1.height = p2.height = 150;
@@ -92,6 +106,27 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		// Update Ball coordinates
+		b.x += b.vx;
+		b.y += b.vy;
+
+		if(b.x < 0) {
+			b.x = 0;
+			b.vx *= -1;
+		}
+		if(b.x > SCREEN_WIDTH) {
+			b.x = SCREEN_WIDTH;
+			b.vx *= -1;
+		}
+		if(b.y < 0) {
+			b.y = 0;
+			b.vy *= -1;
+		}
+		if(b.y > SCREEN_HEIGHT) {
+			b.y = SCREEN_HEIGHT;
+			b.vy *= -1;
+		}
+
 		// Boundary Collision
 		if(p1.y < 0) p1.y = 0;
 		if(p1.y + p1.height > SCREEN_HEIGHT) p1.y = SCREEN_HEIGHT - p1.height;
@@ -104,9 +139,12 @@ int main(int argc, char* argv[]) {
 		renderTexture(pongBoard, ren, p2.x, p2.y, p1.width, p1.height);
 
 		// Draw the center line
-		renderTexture(pongBoard, ren, SCREEN_WIDTH/2 - 5, 0, 10, SCREEN_HEIGHT);
+		renderTexture(pongBoard, ren, SCREEN_WIDTH/2 - CENTER_WIDTH/2, 0, CENTER_WIDTH, SCREEN_HEIGHT);
 
-		// Display the scroe
+		// Draw the Ball
+		renderTexture(pongBoard, ren, b.x - BALL_WIDTH/2, b.y - BALL_HEIGHT/2, BALL_WIDTH, BALL_HEIGHT);
+
+		// Display the score
 		sprintf(buffer, "%d", p1.score);
 		SDL_Texture *p1score = renderText(buffer, "../fonts/sample.ttf", whiteColor, 40, ren);
 		sprintf(buffer, "%d", p2.score);
