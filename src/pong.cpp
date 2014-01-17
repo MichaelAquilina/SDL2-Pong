@@ -15,7 +15,7 @@ typedef struct {
 	int y;
 	int width;
 	int height;
-	int points;
+	int score;
 	int speed;
 } player;
 
@@ -35,7 +35,6 @@ int main(int argc, char* argv[]) {
 
 	SDL_Color whiteColor = {255, 255, 255};
 	SDL_Surface *fpsCounter;
-	TTF_Font *sampleFont = TTF_OpenFont("../fonts/sample.ttf", 20);
 
 	// Define Players
 	player p1;
@@ -57,6 +56,7 @@ int main(int argc, char* argv[]) {
 	bool quit = false;
 	int frames = 0;
 	float fps;
+	char buffer[512];
 
 	while(!quit) {
 
@@ -101,14 +101,29 @@ int main(int argc, char* argv[]) {
 		renderTexture(pongBoard, ren, p1.x, p1.y, p1.width, p1.height);
 		renderTexture(pongBoard, ren, p2.x, p2.y, p1.width, p1.height);
 
+		// Draw the center line
+		renderTexture(pongBoard, ren, SCREEN_WIDTH/2 - 5, 0, 10, SCREEN_HEIGHT);
+
+		// Display the scroe
+		sprintf(buffer, "%d", p1.score);
+		SDL_Texture *p1score = renderText(buffer, "../fonts/sample.ttf", whiteColor, 40, ren);
+		sprintf(buffer, "%d", p2.score);
+		SDL_Texture *p2score = renderText(buffer, "../fonts/sample.ttf", whiteColor, 40, ren);
+
+		int width;
+		SDL_QueryTexture(p1score, NULL, NULL, &width, NULL);
+
+		renderTexture(p1score, ren, SCREEN_WIDTH/2 - width - 10, 10);
+		renderTexture(p1score, ren, SCREEN_WIDTH/2 + 10, 10);
+
+		SDL_DestroyTexture(p1score);
+		SDL_DestroyTexture(p2score);
+
 		// Extremely ineffecient way of displaying text
-		char fpsBuffer[10];
-		sprintf(fpsBuffer, "%.0f", fps);
-		fpsCounter = TTF_RenderText_Blended(sampleFont, fpsBuffer, whiteColor);
-		SDL_Texture *fpsTexture = SDL_CreateTextureFromSurface(ren, fpsCounter);
-		SDL_FreeSurface(fpsCounter);
-		renderTexture(fpsTexture, ren, SCREEN_WIDTH - 20, 0);
-		SDL_DestroyTexture(fpsTexture);
+		sprintf(buffer, "%.0f", fps);
+		SDL_Texture *fpsCounter = renderText(buffer, "../fonts/sample.ttf", whiteColor, 20, ren);
+		renderTexture(fpsCounter, ren, SCREEN_WIDTH - 20, 0);
+		SDL_DestroyTexture(fpsCounter);
 
 		SDL_RenderPresent(ren);
 	}
