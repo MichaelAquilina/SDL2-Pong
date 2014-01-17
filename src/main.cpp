@@ -9,6 +9,15 @@
 #include "main.hpp"
 #include "util.hpp"
 
+typedef struct {
+	int x;
+	int y;
+	int width;
+	int height;
+	int points;
+	int speed;
+} player;
+
 int main(int argc, char* argv[]) {
 
 	std::cout << "Starting SDL Application..." << std::endl;
@@ -18,11 +27,30 @@ int main(int argc, char* argv[]) {
 
 	Initialise(&ren,&win);
 
+	int board_width;
+	int board_height;
+	SDL_Texture *pongBoard = IMG_LoadTexture(ren, "../img/pong_board.png");
+	SDL_QueryTexture(pongBoard, NULL, NULL, &board_width, &board_height);
+
 	SDL_Color textColor = {255, 255, 255};
 	SDL_Texture *helloWorldTex = renderText("Welcome to Pong!", "../fonts/sample.ttf", textColor, 30, ren);
 
 	if(helloWorldTex == nullptr)
 		sdl_bomb("Unable to render text to texture!");
+
+	// Define Players
+	player p1;
+	player p2;
+
+	p1.width = p2.width = board_width;
+	p1.height = p2.height = 150;
+	p1.speed = p2.speed = 10;
+
+	p1.x = board_width/2 + 10;
+	p2.x = SCREEN_WIDTH - p2.width - 10 - p2.width/2;
+
+	p1.y = SCREEN_HEIGHT/2 - p1.height/2;
+	p2.y = SCREEN_HEIGHT/2 - p2.height/2;
 
 	std::cout << "Starting Game Loop" << std::endl;
 	bool quit = false;
@@ -40,8 +68,10 @@ int main(int argc, char* argv[]) {
 					case SDL_SCANCODE_RIGHT:
 						break;
 					case SDL_SCANCODE_UP:
+						p1.y -= p1.speed;
 						break;
 					case SDL_SCANCODE_DOWN:
+						p1.y += p1.speed;
 						break;
 				}
 			}
@@ -49,11 +79,15 @@ int main(int argc, char* argv[]) {
 
 		SDL_RenderClear(ren);
 
+		renderTexture(pongBoard, ren, p1.x, p1.y, p1.width, p1.height);
+		renderTexture(pongBoard, ren, p2.x, p2.y, p1.width, p1.height);
+
 		renderTexture(helloWorldTex, ren, 0, 0);
 
 		SDL_RenderPresent(ren);
 	}
 
+	SDL_DestroyTexture(pongBoard);
 	Cleanup(&ren, &win);
 	return 0;
 }
@@ -75,8 +109,9 @@ int main(int argc, char* argv[]) {
 	 	if(*ren == nullptr)
 	 		sdl_bomb("Failed to create SDL Renderer");
 
-		if((IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG != IMG_INIT_JPG))
-			sdl_bomb("Failed to load the JPG Image loading extensions");
+	 	const int flags = IMG_INIT_PNG | IMG_INIT_JPG;
+		if(IMG_Init(flags) !=flags)
+			sdl_bomb("Failed to load the Image loading extensions");
 
 		if(TTF_Init() != 0)
 			sdl_bomb("Failed to load TTF extension");
