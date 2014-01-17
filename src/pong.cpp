@@ -11,10 +11,10 @@
 #include "util.hpp"
 
 typedef struct {
-	int x;
-	int y;
-	int vx;
-	int vy;
+	float x;
+	float y;
+	float vx;
+	float vy;
 } ball;
 
 typedef struct {
@@ -51,8 +51,8 @@ int main(int argc, char* argv[]) {
 	ball b;
 	b.x = SCREEN_WIDTH / 2;
 	b.y = SCREEN_HEIGHT / 2;
-	b.vx = -4;
-	b.vy = -1;
+	b.vx = (rand() % 2 == 0)? BALL_INIT_SPEED : -1 * BALL_INIT_SPEED;
+	b.vy = -0.5f;
 
 	p1.score = p2.score = 0;
 	p1.width = p2.width = board_width;
@@ -125,13 +125,13 @@ int main(int argc, char* argv[]) {
 			p2.score += 1;
 			b.x = p1.x + p1.width;
 			b.y = p1.y + p1.height/2;
-			b.vx = 2;
+			b.vx = BALL_INIT_SPEED;
 		}
 		if(b.x >= SCREEN_WIDTH) {
 			p1.score += 1;
 			b.x = p2.x;
 			b.y = p2.y + p2.height/2;
-			b.vx = -2;
+			b.vx = -1 * BALL_INIT_SPEED;
 		}
 
 		if(p1.y < 0) p1.y = 0;
@@ -142,11 +142,11 @@ int main(int argc, char* argv[]) {
 		// Player Collision
 		if(b.x > p1.x && b.x < p1.x + p1.width && b.y > p1.y && b.y < p1.y + p1.height) {
 			b.x = p1.x + p1.width;
-			b.vx *= -1;
+			b.vx *= -1 * BALL_ACCELERATE;
 		}
 		if(b.x > p2.x && b.x < p2.x + p2.width && b.y > p2.y && b.y < p2.y + p2.height) {
 			b.x = p2.x;
-			b.vx *= -1;
+			b.vx *= -1 * BALL_ACCELERATE;
 		}
 
 		SDL_RenderClear(ren);

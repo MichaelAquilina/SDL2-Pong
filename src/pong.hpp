@@ -8,6 +8,8 @@ const int SCREEN_HEIGHT = 480;
 
 const int CENTER_WIDTH = 5;
 
+const float BALL_ACCELERATE = 1.1f;
+const float BALL_INIT_SPEED = 4.0f;
 const int BALL_WIDTH = 10;
 const int BALL_HEIGHT = 10;
 
