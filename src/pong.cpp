@@ -26,6 +26,12 @@ typedef struct {
 	int speed;
 } player;
 
+float calc_angle(float y1, float y2, int height) {
+	float rely = y1 + height/2 - y2;
+	rely /= height/2.0;   // Normalise
+	return rely * MAX_ANGLE;
+}
+
 int main(int argc, char* argv[]) {
 
 	std::cout << "Starting SDL Application..." << std::endl;
@@ -148,20 +154,14 @@ int main(int argc, char* argv[]) {
 		if(b.x > p1.x && b.x < p1.x + p1.width && b.y > p1.y && b.y < p1.y + p1.height) {
 			b.x = p1.x + p1.width;
 
-			float rely = p1.y + p1.height/2 - b.y;
-			rely /= p1.height/2.0;   // Normalize
-			float angle = rely * MAX_ANGLE;
-
+			float angle = calc_angle(p1.y, b.y, p1.height);
 			b.vx = BALL_INIT_SPEED * cos(angle);
 			b.vy = BALL_INIT_SPEED * -1 * sin(angle);
 		}
 		if(b.x > p2.x && b.x < p2.x + p2.width && b.y > p2.y && b.y < p2.y + p2.height) {
 			b.x = p2.x;
 
-			float rely = p2.y + p2.height/2 - b.y;
-			rely /= p2.height/2.0;   // Normalize
-			float angle = rely * MAX_ANGLE;
-
+			float angle = calc_angle(p2.y, b.y, p2.height);
 			b.vx = -1 * BALL_INIT_SPEED * cos(angle);
 			b.vy = BALL_INIT_SPEED * -1 * sin(angle);
 		}
