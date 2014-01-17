@@ -107,6 +107,14 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		// Basic AI
+		if(b.y < p2.y + p2.height/2) {
+			p2.y -= p2.speed;
+		}
+		if(b.y > p2.y + p2.height/2) {
+			p2.y += p2.speed;
+		}
+
 		// Update Ball coordinates
 		b.x += b.vx;
 		b.y += b.vy;
