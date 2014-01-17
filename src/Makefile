@@ -1,4 +1,4 @@
-all: a.out
+all: pong.exe
 
-a.out: main.cpp util.hpp
-	g++ -ggdb --std=c++11 main.cpp -lSDL2 -lSDL2_image -lSDL2_ttf
+pong.exe: pong.cpp util.hpp
+	g++ -ggdb --std=c++11 pong.cpp -lSDL2 -lSDL2_image -lSDL2_ttf -o pong.exe
