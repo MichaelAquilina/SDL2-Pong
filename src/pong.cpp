@@ -156,14 +156,14 @@ int main(int argc, char* argv[]) {
 
 			float angle = calc_angle(p1.y, b.y, p1.height);
 			b.vx = BALL_INIT_SPEED * cos(angle);
-			b.vy = BALL_INIT_SPEED * -1 * sin(angle);
+			b.vy = ((b.vy>0)? -1 : 1) * BALL_INIT_SPEED * sin(angle);
 		}
 		if(b.x > p2.x && b.x < p2.x + p2.width && b.y > p2.y && b.y < p2.y + p2.height) {
 			b.x = p2.x;
 
 			float angle = calc_angle(p2.y, b.y, p2.height);
 			b.vx = -1 * BALL_INIT_SPEED * cos(angle);
-			b.vy = BALL_INIT_SPEED * -1 * sin(angle);
+			b.vy = ((b.vy>0)? -1 : 1) * BALL_INIT_SPEED * sin(angle);
 		}
 
 		SDL_RenderClear(ren);
