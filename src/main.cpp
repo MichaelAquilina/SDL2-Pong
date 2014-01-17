@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -10,7 +11,6 @@ const int SCREEN_HEIGHT = 480;
 void logSDLError(const std::string &msg, std::ostream &os = std::cout) {
 	os << msg << " error: " << SDL_GetError() << std::endl;
 }
-
 
 void sdl_bomb(const std::string &msg) {
 	logSDLError(msg, std::cerr);
@@ -21,34 +21,15 @@ void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, int w=-1, 
 	SDL_Rect dest;
 	dest.x = x;
 	dest.y = y;
+	dest.w = w;
+	dest.h = h;
 
+	// If no width and height are specified, use the texture's actual width and height
 	if(w == -1 || h == -1)
 		SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
-	else
-	{
-		dest.w = w;
-		dest.h = h;
-	}
 
 	SDL_RenderCopy(ren, tex, NULL, &dest);
 }
-
-SDL_Texture* loadTexture(const std::string &path, SDL_Renderer *ren) {
-	SDL_Texture *tex = nullptr;
-	SDL_Surface *bmp = SDL_LoadBMP(path.c_str());
-
-	if(bmp != nullptr) {
-		tex = SDL_CreateTextureFromSurface(ren, bmp);
-		SDL_FreeSurface(bmp);
-
-		if(tex == nullptr)
-			logSDLError("Failed to Create Texture from surface");
-	}
-	else logSDLError("Failed to load image to surface");
-
-	return tex;
-}
-
 
 int main(int argc, char* argv[]) {
 
@@ -71,8 +52,8 @@ int main(int argc, char* argv[]) {
 	if(ren == nullptr)
 		sdl_bomb("Failed to create SDL Renderer");
 
-	SDL_Texture *background = loadTexture("background.bmp", ren);
-	SDL_Texture *image = loadTexture("image.bmp", ren);
+	SDL_Texture *background = IMG_LoadTexture(ren, "../img/background.bmp");
+	SDL_Texture *image = IMG_LoadTexture(ren, "../img/wolf.jpg");
 
 	SDL_RenderClear(ren);
 
