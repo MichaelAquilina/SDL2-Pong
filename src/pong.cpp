@@ -37,8 +37,8 @@ int main(int argc, char* argv[]) {
 
 	int board_width;
 	int board_height;
-	SDL_Texture *pongBoard = IMG_LoadTexture(ren, "../img/pong_board.png");
-	SDL_QueryTexture(pongBoard, NULL, NULL, &board_width, &board_height);
+	SDL_Texture *squareTex = IMG_LoadTexture(ren, "../img/pong_board.png");
+	SDL_QueryTexture(squareTex, NULL, NULL, &board_width, &board_height);
 
 	SDL_Color whiteColor = {255, 255, 255};
 	SDL_Surface *fpsCounter;
@@ -151,14 +151,14 @@ int main(int argc, char* argv[]) {
 
 		SDL_RenderClear(ren);
 
-		renderTexture(pongBoard, ren, p1.x, p1.y, p1.width, p1.height);
-		renderTexture(pongBoard, ren, p2.x, p2.y, p1.width, p1.height);
+		renderTexture(squareTex, ren, p1.x, p1.y, p1.width, p1.height);
+		renderTexture(squareTex, ren, p2.x, p2.y, p1.width, p1.height);
 
 		// Draw the center line
-		renderTexture(pongBoard, ren, SCREEN_WIDTH/2 - CENTER_WIDTH/2, 0, CENTER_WIDTH, SCREEN_HEIGHT);
+		renderTexture(squareTex, ren, SCREEN_WIDTH/2 - CENTER_WIDTH/2, 0, CENTER_WIDTH, SCREEN_HEIGHT);
 
 		// Draw the Ball
-		renderTexture(pongBoard, ren, b.x - BALL_WIDTH/2, b.y - BALL_HEIGHT/2, BALL_WIDTH, BALL_HEIGHT);
+		renderTexture(squareTex, ren, b.x - BALL_WIDTH/2, b.y - BALL_HEIGHT/2, BALL_WIDTH, BALL_HEIGHT);
 
 		// Display the score
 		sprintf(buffer, "%d", p1.score);
@@ -184,7 +184,7 @@ int main(int argc, char* argv[]) {
 		SDL_RenderPresent(ren);
 	}
 
-	SDL_DestroyTexture(pongBoard);
+	SDL_DestroyTexture(squareTex);
 	Cleanup(&ren, &win);
 	return 0;
 }
