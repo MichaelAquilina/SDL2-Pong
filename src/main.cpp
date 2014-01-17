@@ -58,18 +58,31 @@ int main(int argc, char* argv[]) {
 	SDL_Texture *background = IMG_LoadTexture(ren, "../img/background.bmp");
 	SDL_Texture *image = IMG_LoadTexture(ren, "../img/wolf.jpg");
 
-	SDL_RenderClear(ren);
-
-	renderTexture(background, ren, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
 	int img_width;
 	int img_height;
 	SDL_QueryTexture(image, NULL, NULL, &img_width, &img_height);
-	renderTexture(image, ren, SCREEN_WIDTH/2 - img_width/2, SCREEN_HEIGHT/2 - img_height/2);
 
-	SDL_RenderPresent(ren);
+	SDL_Event e;
 
-	SDL_Delay(2000);
+	bool quit = false;
+	while(!quit) {
+		while(SDL_PollEvent(&e)) {
+			if(e.type == SDL_QUIT)  quit = true;
+			if(e.type == SDL_KEYDOWN) {
+				if(e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) quit = true;
+
+				bool isPressed = (e.key.state == SDL_PRESSED)? true : false;
+				std::cout << (char) e.key.keysym.sym << std::endl;
+			}
+		}
+
+		SDL_RenderClear(ren);
+
+		renderTexture(background, ren, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		renderTexture(image, ren, SCREEN_WIDTH/2 - img_width/2, SCREEN_HEIGHT/2 - img_height/2);
+
+		SDL_RenderPresent(ren);
+	}
 
 	SDL_DestroyTexture(background);
 	SDL_DestroyTexture(image);
