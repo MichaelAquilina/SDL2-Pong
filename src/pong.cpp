@@ -90,11 +90,13 @@ int main(int argc, char* argv[]) {
 						break;
 				}
 			}
-
-			// Boundary Collision
-			if(p1.y < 0) p1.y = 0;
-			if(p1.y + p1.height > SCREEN_HEIGHT) p1.y = SCREEN_HEIGHT - p1.height;
 		}
+
+		// Boundary Collision
+		if(p1.y < 0) p1.y = 0;
+		if(p1.y + p1.height > SCREEN_HEIGHT) p1.y = SCREEN_HEIGHT - p1.height;
+		if(p2.y < 0) p2.y = 0;
+		if(p2.y + p2.height > SCREEN_HEIGHT) p2.y = SCREEN_HEIGHT - p2.height;
 
 		SDL_RenderClear(ren);
 
