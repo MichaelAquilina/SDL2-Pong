@@ -52,6 +52,9 @@ int main(int argc, char* argv[]) {
 	if(ren == nullptr)
 		sdl_bomb("Failed to create SDL Renderer");
 
+	if((IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG != IMG_INIT_JPG))
+		sdl_bomb("Failed to load the JPG Image loading extensions");
+
 	SDL_Texture *background = IMG_LoadTexture(ren, "../img/background.bmp");
 	SDL_Texture *image = IMG_LoadTexture(ren, "../img/wolf.jpg");
 
