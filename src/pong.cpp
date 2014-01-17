@@ -72,6 +72,7 @@ int main(int argc, char* argv[]) {
 	int frames = 0;
 	float fps;
 	char buffer[512];
+	const Uint8 *keystates = SDL_GetKeyboardState(NULL);
 
 	while(!quit) {
 
@@ -93,19 +94,15 @@ int main(int argc, char* argv[]) {
 					case SDL_SCANCODE_ESCAPE:
 						quit = true;
 						break;
-					case SDL_SCANCODE_LEFT:
-						break;
-					case SDL_SCANCODE_RIGHT:
-						break;
-					case SDL_SCANCODE_UP:
-						p1.y -= p1.speed;
-						break;
-					case SDL_SCANCODE_DOWN:
-						p1.y += p1.speed;
-						break;
 				}
 			}
 		}
+
+		// Player Movement
+		if(keystates[SDL_SCANCODE_UP])
+			p1.y -= p1.speed;
+		if(keystates[SDL_SCANCODE_DOWN])
+			p1.y += p1.speed;
 
 		// Basic AI
 		if(b.y < p2.y + p2.height/2) {
@@ -150,11 +147,23 @@ int main(int argc, char* argv[]) {
 		// Player Collision
 		if(b.x > p1.x && b.x < p1.x + p1.width && b.y > p1.y && b.y < p1.y + p1.height) {
 			b.x = p1.x + p1.width;
-			b.vx *= -1 * BALL_ACCELERATE;
+
+			float rely = p1.y + p1.height/2 - b.y;
+			rely /= p1.height/2.0;   // Normalize
+			float angle = rely * MAX_ANGLE;
+
+			b.vx = BALL_INIT_SPEED * cos(angle);
+			b.vy = BALL_INIT_SPEED * -1 * sin(angle);
 		}
 		if(b.x > p2.x && b.x < p2.x + p2.width && b.y > p2.y && b.y < p2.y + p2.height) {
 			b.x = p2.x;
-			b.vx *= -1 * BALL_ACCELERATE;
+
+			float rely = p2.y + p2.height/2 - b.y;
+			rely /= p2.height/2.0;   // Normalize
+			float angle = rely * MAX_ANGLE;
+
+			b.vx = -1 * BALL_INIT_SPEED * cos(angle);
+			b.vy = BALL_INIT_SPEED * -1 * sin(angle);
 		}
 
 		SDL_RenderClear(ren);
