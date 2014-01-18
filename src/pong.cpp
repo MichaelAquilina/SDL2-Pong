@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
 		if(p2.pos.y + p2.pos.h > SCREEN_HEIGHT) p2.pos.y = SCREEN_HEIGHT - p2.pos.h;
 
 		// Player Collision
-		if(b.x > p1.pos.x && b.x < p1.pos.x + p1.pos.w && b.y > p1.pos.y && b.pos.y < p1.pos.y + p1.pos.h) {
+		if(b.x > p1.pos.x && b.x < p1.pos.x + p1.pos.w && b.y > p1.pos.y && b.y < p1.pos.y + p1.pos.h) {
 			b.x = p1.pos.x + p1.pos.w;
 
 			b.speed = b.speed * BALL_ACCELERATE;
