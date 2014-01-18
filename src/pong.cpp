@@ -15,13 +15,11 @@ typedef struct {
 	float y;
 	float vx;
 	float vy;
+	float speed;
 } ball;
 
 typedef struct {
-	int x;
-	int y;
-	int width;
-	int height;
+	SDL_Rect pos;
 	int score;
 	int speed;
 } player;
@@ -57,19 +55,20 @@ int main(int argc, char* argv[]) {
 	ball b;
 	b.x = SCREEN_WIDTH / 2;
 	b.y = SCREEN_HEIGHT / 2;
+	b.speed = BALL_INIT_SPEED;
 	b.vx = (rand() % 2 == 0)? BALL_INIT_SPEED : -1 * BALL_INIT_SPEED;
 	b.vy = -0.5f;
 
 	p1.score = p2.score = 0;
-	p1.width = p2.width = board_width;
-	p1.height = p2.height = 150;
+	p1.pos.w = p2.pos.w = board_width;
+	p1.pos.h = p2.pos.h = 150;
 	p1.speed = p2.speed = 10;
 
-	p1.x = board_width/2 + 10;
-	p2.x = SCREEN_WIDTH - p2.width - 10 - p2.width/2;
+	p1.pos.x = board_width/2 + 10;
+	p2.pos.x = SCREEN_WIDTH - p2.pos.w- 10 - p2.pos.w/2;
 
-	p1.y = SCREEN_HEIGHT/2 - p1.height/2;
-	p2.y = SCREEN_HEIGHT/2 - p2.height/2;
+	p1.pos.y = SCREEN_HEIGHT/2 - p1.pos.h/2;
+	p2.pos.y = SCREEN_HEIGHT/2 - p2.pos.h/2;
 
 	std::cout << "Starting Game Loop" << std::endl;
 
@@ -106,16 +105,16 @@ int main(int argc, char* argv[]) {
 
 		// Player Movement
 		if(keystates[SDL_SCANCODE_UP])
-			p1.y -= p1.speed;
+			p1.pos.y -= p1.speed;
 		if(keystates[SDL_SCANCODE_DOWN])
-			p1.y += p1.speed;
+			p1.pos.y += p1.speed;
 
 		// Basic AI
-		if(b.y < p2.y + p2.height/2) {
-			p2.y -= p2.speed;
+		if(b.y < p2.pos.y + p2.pos.h/2) {
+			p2.pos.y -= p2.speed;
 		}
-		if(b.y > p2.y + p2.height/2) {
-			p2.y += p2.speed;
+		if(b.y > p2.pos.y + p2.pos.h/2) {
+			p2.pos.y += p2.speed;
 		}
 
 		// Update Ball coordinates
@@ -134,42 +133,48 @@ int main(int argc, char* argv[]) {
 
 		if(b.x < 0) {
 			p2.score += 1;
-			b.x = p1.x + p1.width;
-			b.y = p1.y + p1.height/2;
+			b.x = p1.pos.x + p1.pos.w;
+			b.y = p1.pos.y + p1.pos.h/2;
 			b.vx = BALL_INIT_SPEED;
+			b.speed = BALL_INIT_SPEED;
 		}
 		if(b.x >= SCREEN_WIDTH) {
 			p1.score += 1;
-			b.x = p2.x;
-			b.y = p2.y + p2.height/2;
+			b.x = p2.pos.x;
+			b.y = p2.pos.y + p2.pos.h/2;
 			b.vx = -1 * BALL_INIT_SPEED;
+			b.speed = BALL_INIT_SPEED;
 		}
 
-		if(p1.y < 0) p1.y = 0;
-		if(p1.y + p1.height > SCREEN_HEIGHT) p1.y = SCREEN_HEIGHT - p1.height;
-		if(p2.y < 0) p2.y = 0;
-		if(p2.y + p2.height > SCREEN_HEIGHT) p2.y = SCREEN_HEIGHT - p2.height;
+		if(p1.pos.y < 0) p1.pos.y = 0;
+		if(p1.pos.y + p1.pos.h > SCREEN_HEIGHT) p1.pos.y = SCREEN_HEIGHT - p1.pos.h;
+		if(p2.pos.y < 0) p2.pos.y = 0;
+		if(p2.pos.y + p2.pos.h > SCREEN_HEIGHT) p2.pos.y = SCREEN_HEIGHT - p2.pos.h;
 
 		// Player Collision
-		if(b.x > p1.x && b.x < p1.x + p1.width && b.y > p1.y && b.y < p1.y + p1.height) {
-			b.x = p1.x + p1.width;
+		if(b.x > p1.pos.x && b.x < p1.pos.x + p1.pos.w && b.y > p1.pos.y && b.pos.y < p1.pos.y + p1.pos.h) {
+			b.x = p1.pos.x + p1.pos.w;
 
-			float angle = calc_angle(p1.y, b.y, p1.height);
-			b.vx = BALL_INIT_SPEED * cos(angle);
-			b.vy = ((b.vy>0)? -1 : 1) * BALL_INIT_SPEED * sin(angle);
+			b.speed = b.speed * BALL_ACCELERATE;
+
+			float angle = calc_angle(p1.pos.y, b.y, p1.pos.h);
+			b.vx = b.speed * cos(angle);
+			b.vy = ((b.vy>0)? -1 : 1) * b.speed * sin(angle);
 		}
-		if(b.x > p2.x && b.x < p2.x + p2.width && b.y > p2.y && b.y < p2.y + p2.height) {
-			b.x = p2.x;
+		if(b.x > p2.pos.x && b.x < p2.pos.x + p2.pos.w && b.y > p2.pos.y && b.y < p2.pos.y + p2.pos.h) {
+			b.x = p2.pos.x;
 
-			float angle = calc_angle(p2.y, b.y, p2.height);
-			b.vx = -1 * BALL_INIT_SPEED * cos(angle);
-			b.vy = ((b.vy>0)? -1 : 1) * BALL_INIT_SPEED * sin(angle);
+			b.speed = b.speed * BALL_ACCELERATE;
+
+			float angle = calc_angle(p2.pos.y, b.y, p2.pos.h);
+			b.vx = -1 * b.speed * cos(angle);
+			b.vy = ((b.vy>0)? -1 : 1) * b.speed * sin(angle);
 		}
 
 		SDL_RenderClear(ren);
 
-		renderTexture(squareTex, ren, p1.x, p1.y, p1.width, p1.height);
-		renderTexture(squareTex, ren, p2.x, p2.y, p1.width, p1.height);
+		SDL_RenderCopy(ren, squareTex, NULL, &p1.pos);
+		SDL_RenderCopy(ren, squareTex, NULL, &p2.pos);
 
 		// Draw the center line
 		renderTexture(squareTex, ren, SCREEN_WIDTH/2 - CENTER_WIDTH/2, 0, CENTER_WIDTH, SCREEN_HEIGHT);
