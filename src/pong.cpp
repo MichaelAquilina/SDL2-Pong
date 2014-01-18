@@ -137,8 +137,8 @@ int main(int argc, char* argv[]) {
 			b.y = 0;
 			b.vy *= -1;
 		}
-		if(b.y >= SCREEN_HEIGHT) {
-			b.y = SCREEN_HEIGHT - 1;
+		if(b.y + BALL_HEIGHT >= SCREEN_HEIGHT) {
+			b.y = SCREEN_HEIGHT - BALL_HEIGHT - 1;
 			b.vy *= -1;
 		}
 
