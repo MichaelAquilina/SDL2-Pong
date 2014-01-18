@@ -66,7 +66,8 @@ int main(int argc, char* argv[]) {
 	p1.score = p2.score = 0;
 	p1.pos.w = p2.pos.w = board_width;
 	p1.pos.h = p2.pos.h = 150;
-	p1.speed = p2.speed = 10;
+	p1.speed = 10;
+	p2.speed = 3.5;
 
 	p1.pos.x = board_width/2 + 10;
 	p2.pos.x = SCREEN_WIDTH - p2.pos.w- 10 - p2.pos.w/2;
