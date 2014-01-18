@@ -47,6 +47,10 @@ int main(int argc, char* argv[]) {
 	SDL_Color whiteColor = {255, 255, 255};
 	SDL_Surface *fpsCounter;
 
+	SDL_Rect b_rect;
+	b_rect.w = BALL_HEIGHT;
+	b_rect.h = BALL_HEIGHT;
+
 	// Define Players
 	player p1;
 	player p2;
@@ -117,6 +121,12 @@ int main(int argc, char* argv[]) {
 			p2.pos.y += p2.speed;
 		}
 
+		if(b.vx > BALL_MAXSPEED)
+			b.vx = BALL_MAXSPEED;
+
+		if(b.vy > BALL_MAXSPEED)
+			b.vy = BALL_MAXSPEED;
+
 		// Update Ball coordinates
 		b.x += b.vx;
 		b.y += b.vy;
@@ -138,9 +148,9 @@ int main(int argc, char* argv[]) {
 			b.vx = BALL_INIT_SPEED;
 			b.speed = BALL_INIT_SPEED;
 		}
-		if(b.x >= SCREEN_WIDTH) {
+		if(b.x + BALL_WIDTH>= SCREEN_WIDTH) {
 			p1.score += 1;
-			b.x = p2.pos.x;
+			b.x = p2.pos.x - BALL_WIDTH;
 			b.y = p2.pos.y + p2.pos.h/2;
 			b.vx = -1 * BALL_INIT_SPEED;
 			b.speed = BALL_INIT_SPEED;
@@ -151,8 +161,12 @@ int main(int argc, char* argv[]) {
 		if(p2.pos.y < 0) p2.pos.y = 0;
 		if(p2.pos.y + p2.pos.h > SCREEN_HEIGHT) p2.pos.y = SCREEN_HEIGHT - p2.pos.h;
 
+		// Update the b_rect structure
+		b_rect.x = (int) b.x;
+		b_rect.y = (int) b.y;
+
 		// Player Collision
-		if(b.x > p1.pos.x && b.x < p1.pos.x + p1.pos.w && b.y > p1.pos.y && b.y < p1.pos.y + p1.pos.h) {
+		if(SDL_HasIntersection(&p1.pos, &b_rect)) {
 			b.x = p1.pos.x + p1.pos.w;
 
 			b.speed = b.speed * BALL_ACCELERATE;
@@ -161,8 +175,8 @@ int main(int argc, char* argv[]) {
 			b.vx = b.speed * cos(angle);
 			b.vy = ((b.vy>0)? -1 : 1) * b.speed * sin(angle);
 		}
-		if(b.x > p2.pos.x && b.x < p2.pos.x + p2.pos.w && b.y > p2.pos.y && b.y < p2.pos.y + p2.pos.h) {
-			b.x = p2.pos.x;
+		if(SDL_HasIntersection(&p2.pos, &b_rect)) {
+			b.x = p2.pos.x - BALL_WIDTH;
 
 			b.speed = b.speed * BALL_ACCELERATE;
 
@@ -180,7 +194,7 @@ int main(int argc, char* argv[]) {
 		renderTexture(squareTex, ren, SCREEN_WIDTH/2 - CENTER_WIDTH/2, 0, CENTER_WIDTH, SCREEN_HEIGHT);
 
 		// Draw the Ball
-		renderTexture(squareTex, ren, b.x - BALL_WIDTH/2, b.y - BALL_HEIGHT/2, BALL_WIDTH, BALL_HEIGHT);
+		renderTexture(squareTex, ren, b.x, b.y, BALL_WIDTH, BALL_HEIGHT);
 
 		// Display the score
 		sprintf(buffer, "%d", p1.score);
