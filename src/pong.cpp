@@ -115,10 +115,18 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+        Uint8 upButton = 0;
+        Uint8 downButton = 0;
+
+        if(controller) {
+            downButton = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+            upButton = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP);
+        }
+
 		// Player Movement
-		if(keystates[SDL_SCANCODE_UP])
+        if(keystates[SDL_SCANCODE_UP] || upButton)
 			p1.pos.y -= p1.speed;
-		if(keystates[SDL_SCANCODE_DOWN])
+        if(keystates[SDL_SCANCODE_DOWN] || downButton)
 			p1.pos.y += p1.speed;
 
 		// Basic AI
