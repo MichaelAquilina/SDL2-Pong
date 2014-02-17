@@ -36,7 +36,9 @@ int main(int argc, char* argv[]) {
 	SDL_Event e;
 	SDL_Renderer *ren = nullptr;
 	SDL_Window *win = nullptr;
-    SDL_GameController* controller = nullptr;
+    SDL_GameController *controller = nullptr;
+
+    SDL_Haptic *haptic = nullptr;
 
 	Initialise(&ren,&win);
 
@@ -44,6 +46,10 @@ int main(int argc, char* argv[]) {
     if (SDL_NumJoysticks() == 1 && SDL_IsGameController(0)) {
         controller = SDL_GameControllerOpen(0);
         std::cout << "Found a controller: " << SDL_GameControllerName(controller) << std::endl;
+
+        haptic = SDL_HapticOpen(0);
+
+        SDL_HapticRumbleInit(haptic);
     }
 
 	int board_width;
@@ -158,13 +164,21 @@ int main(int argc, char* argv[]) {
 		}
 
 		if(b.x < 0) {
-			p2.score += 1;
+
+            if(haptic)
+                SDL_HapticRumblePlay(haptic, 0.7, 1000);
+
+            p2.score += 1;
 			b.x = p1.pos.x + p1.pos.w;
 			b.y = p1.pos.y + p1.pos.h/2;
 			b.vx = BALL_INIT_SPEED;
 			b.speed = BALL_INIT_SPEED;
 		}
 		if(b.x + BALL_WIDTH>= SCREEN_WIDTH) {
+
+            if(haptic)
+                SDL_HapticRumblePlay(haptic, 0.7, 1000);
+
 			p1.score += 1;
 			b.x = p2.pos.x - BALL_WIDTH;
 			b.y = p2.pos.y + p2.pos.h/2;
@@ -183,6 +197,10 @@ int main(int argc, char* argv[]) {
 
 		// Player Collision
 		if(SDL_HasIntersection(&p1.pos, &b_rect)) {
+
+            if(haptic)
+                SDL_HapticRumblePlay(haptic, 0.5, 200);
+
 			b.x = p1.pos.x + p1.pos.w;
 
 			b.speed = b.speed * BALL_ACCELERATE;
@@ -192,6 +210,10 @@ int main(int argc, char* argv[]) {
 			b.vy = ((b.vy>0)? -1 : 1) * b.speed * sin(angle);
 		}
 		if(SDL_HasIntersection(&p2.pos, &b_rect)) {
+
+            if(haptic)
+                SDL_HapticRumblePlay(haptic, 0.5, 200);
+
 			b.x = p2.pos.x - BALL_WIDTH;
 
 			b.speed = b.speed * BALL_ACCELERATE;
@@ -235,6 +257,9 @@ int main(int argc, char* argv[]) {
 
 		SDL_RenderPresent(ren);
 	}
+
+    if(haptic)
+        SDL_HapticClose(haptic);
 
 	SDL_DestroyTexture(squareTex);
     Cleanup(&ren, &win, &controller);
