@@ -36,8 +36,15 @@ int main(int argc, char* argv[]) {
 	SDL_Event e;
 	SDL_Renderer *ren = nullptr;
 	SDL_Window *win = nullptr;
+    SDL_GameController* controller = nullptr;
 
 	Initialise(&ren,&win);
+
+    // Check for controller support
+    if (SDL_NumJoysticks() == 1 && SDL_IsGameController(0)) {
+        controller = SDL_GameControllerOpen(0);
+        std::cout << "Found a controller: " << SDL_GameControllerName(controller) << std::endl;
+    }
 
 	int board_width;
 	int board_height;
@@ -222,7 +229,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	SDL_DestroyTexture(squareTex);
-	Cleanup(&ren, &win);
+    Cleanup(&ren, &win, &controller);
 	return 0;
 }
 
@@ -251,9 +258,10 @@ int main(int argc, char* argv[]) {
 			sdl_bomb("Failed to load TTF extension");
  }
 
- void Cleanup(SDL_Renderer **ren, SDL_Window **win) {
+ void Cleanup(SDL_Renderer **ren, SDL_Window **win, SDL_GameController **controller) {
 		SDL_DestroyRenderer(*ren);
 		SDL_DestroyWindow(*win);
+        SDL_GameControllerClose(*controller);
 
 		TTF_Quit();
 		IMG_Quit();

@@ -17,7 +17,7 @@ const int BALL_WIDTH = 10;
 const int BALL_HEIGHT = 10;
 
 void Initialise(SDL_Renderer **ren, SDL_Window **win);
-void Cleanup(SDL_Renderer **ren, SDL_Window **win);
+void Cleanup(SDL_Renderer **ren, SDL_Window **win, SDL_GameController **controller);
 
 
 #endif /* MAIN_HPP_ */
