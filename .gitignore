@@ -1,3 +1,10 @@
+# Qt Creator
+*.config
+*.files
+*.includes
+*.creator
+*.user
+
 # Object files
 *.o
 *.ko
