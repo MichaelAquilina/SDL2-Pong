@@ -14,6 +14,10 @@ Controls
 * Down - move down
 * Escape - Exit
 
+Controller Support
+------------------
+The game has very basic controller support. You can use the up and down buttons to move your paddle. I also introduced some basic haptic feedback when the ball hits a paddle or one of the players score a point.
+
 Requirements
 ------------
 You require the SDL2.0 development libraries along with the following extensions:
